@@ -9,7 +9,7 @@ from universe.vectorized import MultiprocessingEnv
 
 class SeedEnv(Env):
     def __init__(self):
-        super().__init__()
+        super(SeedEnv, self).__init__()
         self._seed_value = None
 
     def _seed(self, seed=None):
