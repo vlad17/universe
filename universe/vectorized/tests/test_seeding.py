@@ -1,4 +1,6 @@
-import unittest
+import sys
+
+import pytest
 
 from gym import Env
 from gym.envs import register
@@ -17,24 +19,18 @@ class SeedEnv(Env):
     def _reset(self):
         return self._seed_value
 
+def setup_module(_):
+    env = SeedEnv()
+    env_id = env.__class__.__name__ + '-v0'
+    entry = env.__class__.__module__ + ':' + env.__class__.__name__
+    register(env_id, entry_point=entry)
 
-class TestMultiProcessingSeedEnv(unittest.TestCase):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.env_id = None
 
-    def setUp(self):
-        super().setUp()
-        env = SeedEnv()
-        self.env_id = env.__class__.__name__ + '-v0'
-        entry = env.__class__.__module__ + ':' + env.__class__.__name__
-        register(self.env_id, entry_point=entry)
-
-    def test_multiprocessing_env_seed_propagates(self):
-        venv = MultiprocessingEnv(self.env_id)
-        venv.configure(n=4)
-        venv.seed([1, 2, 3, 4])
-        self.assertEqual(venv.reset(), [1, 2, 3, 4])
+def test_multiprocessing_env_seed_propagates():
+    venv = MultiprocessingEnv('SeedEnv-v0')
+    venv.configure(n=4)
+    venv.seed([1, 2, 3, 4])
+    assert venv.reset() == [1, 2, 3, 4]
 
 if __name__ == '__main__':
-    unittest.main()
+    pytest.main(sys.argv)
