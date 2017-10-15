@@ -210,8 +210,8 @@ def reset_n(worker_n):
 def seed_n(worker_n, seed_n):
     accumulated = 0
     for worker in worker_n:
-        action_m = seed_n[accumulated:accumulated+worker.m]
-        worker.seed_start(seed_n)
+        seed_m = seed_n[accumulated:accumulated+worker.m]
+        worker.seed_start(seed_m)
         accumulated += worker.m
 
 
@@ -295,6 +295,8 @@ class MultiprocessingEnv(core.Env):
 
         if episode_limit is not None:
             self._episode_id.episode_limit = episode_limit
+
+        self._configured = True
 
     def _seed(self, seed):
         seed_n(self.worker_n, seed)

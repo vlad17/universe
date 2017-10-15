@@ -7,6 +7,7 @@ from universe.vectorized import MultiprocessingEnv
 
 class SeedEnv(Env):
     def __init__(self):
+        super().__init__()
         self._seed_value = None
 
     def _seed(self, seed=None):
@@ -18,8 +19,8 @@ class SeedEnv(Env):
 
 
 class TestMultiProcessingSeedEnv(unittest.TestCase):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.env_id = None
 
     def setUp(self):
@@ -29,14 +30,11 @@ class TestMultiProcessingSeedEnv(unittest.TestCase):
         entry = env.__class__.__module__ + ':' + env.__class__.__name__
         register(self.env_id, entry_point=entry)
 
-    def test_multiprocessing_env_seed(self):
+    def test_multiprocessing_env_seed_propagates(self):
         venv = MultiprocessingEnv(self.env_id)
-        venv.configure(n=2)
-        venv.seed([1, 2])
-        seed1, seed2 = venv.reset()
-        self.assertEqual(seed1, 1)
-        self.assertEqual(seed2, 2)
-
+        venv.configure(n=4)
+        venv.seed([1, 2, 3, 4])
+        self.assertEqual(venv.reset(), [1, 2, 3, 4])
 
 if __name__ == '__main__':
     unittest.main()
